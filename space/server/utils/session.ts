@@ -1,9 +1,10 @@
 import type { H3Event } from 'h3'
 import { sha256 } from 'ohash'
-import { defu } from 'defu'
+import { useSession } from 'h3'
 
 export interface UserSession {
   user?: any
+  [key: string]: any
 }
 
 export async function getUserSession (event: H3Event) {

@@ -6,11 +6,11 @@ import { drizzle, BetterSQLite3Database } from 'drizzle-orm/better-sqlite3'
 import Database from 'better-sqlite3'
 import { join } from 'pathe'
 
-export * as tables from '~/server/db/schema'
+export * as tables from '~~/server/db/tables'
 
 let _db: DrizzleD1Database | BetterSQLite3Database | LibSQLDatabase | null = null
 
-export const useDb = () => {
+export function useDb () {
   if (!_db) {
     if (process.env.TURSO_DB_URL && process.env.TURSO_DB_TOKEN) {
       // Turso in production

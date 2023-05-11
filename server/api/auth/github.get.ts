@@ -1,39 +1,25 @@
 export default eventHandler(async (event) => {
   // @ts-ignore
   const config = useRuntimeConfig(event)
-  const { code } = getQuery(event)
 
-  if (!code) {
-    // Redirect to GitHub Oauth page
-    const redirectUrl = getRequestURL(event).href
-    return sendRedirect(event, `https://github.com/login/oauth/authorize?client_id=${config.github.clientId}&redirect_uri=${redirectUrl}`)
-  }
+  try {
+    const ghUser = await loginWithGitHub(event, {
+      clientId: config.github.clientId,
+      clientSecret: config.github.clientSecret,
+    })
 
-  const response: any = await $fetch(
-    'https://github.com/login/oauth/access_token',
-    {
-      method: 'POST',
-      body: {
-        client_id: config.github.clientId,
-        client_secret: config.github.clientSecret,
-        code
-      }
+    if (!ghUser) {
+      // User redirected
+      return
     }
-  )
-  if (response.error) {
+
+    await setUserSession(event, {
+      user: ghUser,
+      createdAt: new Date()
+    })
+  } catch(e) {
     return sendRedirect(event, '/')
   }
-
-  const ghUser: any = await $fetch('https://api.github.com/user', {
-    headers: {
-      'User-Agent': `Github-OAuth-${config.github.clientId}`,
-      Authorization: `token ${response.access_token}`
-    }
-  })
-
-  await setUserSession(event, {
-    user: ghUser
-  })
 
   return sendRedirect(event, '/')
 })
