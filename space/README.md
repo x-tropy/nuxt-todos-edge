@@ -68,7 +68,7 @@ await clearUserSession(event)
 await requireUserSession(event)
 ```
 
-## Database Helpers (SQLite)
+### Database Helpers (SQLite)
 
 ```ts
 // Returns a Drizzle instance
@@ -78,7 +78,7 @@ const db = useDb()
 tables.*
 ```
 
-### Example
+#### Example
 
 Table definition in `~/server/db/tables.ts`
 
