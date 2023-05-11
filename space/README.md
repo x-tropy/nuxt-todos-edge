@@ -124,6 +124,8 @@ const ghUser = await loginWithGitHub(event, {
   scope?: string[]
   emailRequired?: boolean
 })
+
+// ghUser is undefined if the user is redirected to GitHub OAuth page
 ```
 
 Example: `~/server/api/auth/github.get.ts`
