@@ -153,3 +153,39 @@ export default eventHandler(async (event) => {
   return sendRedirect(event, '/')
 })
 ```
+
+TODO: refactor with:
+```ts
+spaceOAuthEventHandler({
+  provider: 'github',
+  config: {
+    // default to runtimeConfig.oauth.github
+  },
+  onSuccess (event, result) {
+    // result: { user, token }
+  },
+  onError (event, error) {
+
+  }
+})
+```
+
+### Event Handlers
+
+Coming soon.
+
+```ts
+export default spaceEventHandler({
+  // require session
+  session: true,
+  // validation
+  validate: {
+    body: {
+      title: z.string(),
+      completed: z.boolean().optional().default(false),
+    },
+  },
+  handler (event) {
+
+  }
+})
