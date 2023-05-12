@@ -1,19 +1,26 @@
 import { defineNuxtModule, logger } from 'nuxt/kit'
 import { defu } from 'defu'
-import { join } from 'pathe'
+import { join, relative } from 'pathe'
 import { sha256 } from 'ohash'
+import { writeFile } from 'node:fs/promises'
+import { existsSync } from 'node:fs'
 
 export default defineNuxtModule({
   meta: {
     name: 'nuxt-space',
   },
-  setup(_options, nuxt) {
+  async setup(_options, nuxt) {
     const runtimeConfig = nuxt.options.runtimeConfig
     // Db settings
     runtimeConfig.db = defu(runtimeConfig.db, {
       dir: join(nuxt.options.rootDir, 'server', 'db'),
       name: 'db.sqlite'
     })
+    const tablesPath = join(runtimeConfig.db.dir, 'tables.ts')
+    if (!existsSync(tablesPath)) {
+      await writeFile(tablesPath, 'import { sqliteTable, text, integer } from \'drizzle-orm/sqlite-core\'\n', 'utf8')
+    }
+
     // Session settings
     runtimeConfig.session = defu(runtimeConfig.session, {
       name: 'nuxt-space-session',
@@ -24,6 +31,7 @@ export default defineNuxtModule({
       logger.warn(`No session password set, using a random password.\nPlease set NUXT_SESSION_PASSWORD in your .env file with at least 32 chars.\nNUXT_SESSION_PASSWORD=${randomPassword}`)
       runtimeConfig.session.password = randomPassword
     }
+
     // OAuth settings
     runtimeConfig.oauth = defu(runtimeConfig.oauth, {})
     // GitHub Oauth
@@ -31,6 +39,18 @@ export default defineNuxtModule({
       clientId: '',
       clientSecret: '',
     })
+    
+    // Drizzle Migrations
+    if (nuxt.options.dev) {
+      const drizzleConfig = {
+        out: relative(nuxt.options.rootDir, join(runtimeConfig.db.dir, 'migrations')),
+        schema: relative(nuxt.options.rootDir, join(runtimeConfig.db.dir, 'tables.ts')),
+        breakpoints: true
+      }
+      const drizzleConfigPath = join(nuxt.options.rootDir, 'drizzle.config.json')
+      await writeFile(drizzleConfigPath, JSON.stringify(drizzleConfig, null, 2), 'utf8')
+    }
+    logger.info('Make sure to run `npx drizzle-kit generate:sqlite` to generate the database schema and migrations when changing `server/db/tables.ts`')
     logger.success('Nuxt Space module ready')
   }
 })
