@@ -5,6 +5,10 @@ import { join } from 'pathe'
 export default defineNitroPlugin(async () => {
   if (process.dev) {
     const { dir } = useRuntimeConfig().db
-    migrate(useDb() as BetterSQLite3Database, { migrationsFolder: join(dir, './migrations') })
+    try {
+      migrate(useDb() as BetterSQLite3Database, { migrationsFolder: join(dir, './migrations') })
+    } catch (err) {
+      // @ts-ignore
+    }
   }
 })
