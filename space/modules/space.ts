@@ -16,11 +16,6 @@ export default defineNuxtModule({
       dir: join(nuxt.options.rootDir, 'server', 'db'),
       name: 'db.sqlite'
     })
-    const tablesPath = join(runtimeConfig.db.dir, 'tables.ts')
-    if (!existsSync(tablesPath)) {
-      mkdirSync(runtimeConfig.db.dir, { recursive: true })
-      await writeFile(tablesPath, 'import { sqliteTable, text, integer } from \'drizzle-orm/sqlite-core\'\n', 'utf8')
-    }
 
     // Session settings
     runtimeConfig.session = defu(runtimeConfig.session, {
@@ -41,14 +36,23 @@ export default defineNuxtModule({
       clientSecret: '',
     })
     
-    // Drizzle Migrations
-    const drizzleConfig = {
-      out: relative(nuxt.options.rootDir, join(runtimeConfig.db.dir, 'migrations')),
-      schema: relative(nuxt.options.rootDir, join(runtimeConfig.db.dir, 'tables.ts')),
-      breakpoints: true
+    // Drizzle Files
+    if (nuxt.options.dev) {
+      const drizzleConfig = {
+        out: relative(nuxt.options.rootDir, join(runtimeConfig.db.dir, 'migrations')),
+        schema: relative(nuxt.options.rootDir, join(runtimeConfig.db.dir, 'tables.ts')),
+        breakpoints: true
+      }
+      // Create drizzle.config.json
+      const drizzleConfigPath = join(nuxt.options.rootDir, 'drizzle.config.json')
+      await writeFile(drizzleConfigPath, JSON.stringify(drizzleConfig, null, 2), 'utf8')
+      // Create tables.ts if it doesn't exist
+      const tablesPath = join(runtimeConfig.db.dir, 'tables.ts')
+      if (!existsSync(tablesPath)) {
+        mkdirSync(runtimeConfig.db.dir, { recursive: true })
+        await writeFile(tablesPath, 'import { sqliteTable, text, integer } from \'drizzle-orm/sqlite-core\'\n', 'utf8')
+      }
     }
-    const drizzleConfigPath = join(nuxt.options.rootDir, 'drizzle.config.json')
-    await writeFile(drizzleConfigPath, JSON.stringify(drizzleConfig, null, 2), 'utf8')
     logger.info('Make sure to run `npx drizzle-kit generate:sqlite` to generate the database schema and migrations when changing `server/db/tables.ts`')
     logger.success('Nuxt Space module ready')
   }
