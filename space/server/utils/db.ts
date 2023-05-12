@@ -18,9 +18,9 @@ export function useDb () {
         url: process.env.TURSO_DB_URL,
         authToken: process.env.TURSO_DB_TOKEN
       }))
-    } else if (process.env.DB) {
+    } else if (process.env.D1_DB) {
       // d1 in production
-      _db = drizzleD1(process.env.DB)
+      _db = drizzleD1(process.env.D1_DB)
     } else if (process.dev) {
       // local sqlite in development
       const { dbDir } = useRuntimeConfig()

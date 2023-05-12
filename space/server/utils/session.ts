@@ -1,6 +1,7 @@
 import type { H3Event } from 'h3'
 import { sha256 } from 'ohash'
 import { useSession } from 'h3'
+import { defu } from 'defu'
 
 export interface UserSession {
   user?: any
@@ -43,7 +44,7 @@ let sessionConfig: any
 function _useSession (event: H3Event) {
   if (!sessionConfig) {
     // @ts-ignore
-    sessionConfig = useRuntimeConfig(event).session
+    sessionConfig = defu({ password: process.env.NUXT_SESSION_PASSWORD }, useRuntimeConfig(event).session, { name: 'nuxt-space-session' })
   }
 
   if (!sessionConfig.password) {
