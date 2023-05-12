@@ -27,7 +27,10 @@ export function useDb () {
       const sqlite = new Database(join(dir, name))
       _db = drizzle(sqlite)
     } else {
-      throw new Error('No database configured for production')
+      throw createError({
+        statusCode: 500,
+        message: 'No database configured for production'
+      })
     }
   }
   return _db
