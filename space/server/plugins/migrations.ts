@@ -4,10 +4,7 @@ import { join } from 'pathe'
 
 export default defineNitroPlugin(async () => {
   if (process.dev) {
-    const { dbDir } = useRuntimeConfig()
-    if (!dbDir) {
-      throw new Error('No runtimeConfig.dbDir configured')
-    }
-    migrate(useDb() as BetterSQLite3Database, { migrationsFolder: join(dbDir, './migrations') })
+    const { dir } = useRuntimeConfig().db
+    migrate(useDb() as BetterSQLite3Database, { migrationsFolder: join(dir, './migrations') })
   }
 })

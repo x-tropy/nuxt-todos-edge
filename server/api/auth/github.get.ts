@@ -1,12 +1,6 @@
 export default eventHandler(async (event) => {
-  // @ts-ignore
-  const config = useRuntimeConfig(event)
-
   try {
-    const ghUser = await loginWithGitHub(event, {
-      clientId: config.github.clientId,
-      clientSecret: config.github.clientSecret,
-    })
+    const ghUser = await loginWithGitHub(event)
 
     if (!ghUser) {
       // User redirected

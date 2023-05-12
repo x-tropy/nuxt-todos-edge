@@ -44,7 +44,7 @@ let sessionConfig: any
 function _useSession (event: H3Event) {
   if (!sessionConfig) {
     // @ts-ignore
-    sessionConfig = defu({ password: process.env.NUXT_SESSION_PASSWORD }, useRuntimeConfig(event).session, { name: 'nuxt-space-session' })
+    sessionConfig = defu({ password: process.env.NUXT_SESSION_PASSWORD }, useRuntimeConfig(event).session)
   }
 
   if (!sessionConfig.password) {

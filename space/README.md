@@ -134,8 +134,8 @@ Example: `~/server/api/auth/github.get.ts`
 export default eventHandler(async (event) => {
   try {
     const ghUser = await loginWithGitHub(event, {
-      clientId: process.env.GITHUB_CLIENT_ID,
-      clientSecret: process.env.GITHUB_CLIENT_SECRET,
+      clientId: '', // default to process.env.NUXT_OAUTH_GITHUB_CLIENT_ID
+      clientSecret: '', // default to process.env.NUXT_OAUTH_GITHUB_CLIENT_SECRET
     })
     if (!ghUser) {
       // User redirected

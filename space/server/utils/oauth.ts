@@ -1,5 +1,6 @@
 import type { H3Event } from 'h3'
 import { withQuery } from 'ufo'
+import { defu } from 'defu'
 
 export interface LoginGitHubConfig {
   clientId: string
@@ -8,8 +9,9 @@ export interface LoginGitHubConfig {
   emailRequired?: boolean
 }
 
-export async function loginWithGitHub(event: H3Event, config: LoginGitHubConfig) {
+export async function loginWithGitHub(event: H3Event, config?: LoginGitHubConfig) {
   // @ts-ignore
+  config = defu(config, useRuntimeConfig(event).oauth.github)
   const { code } = getQuery(event)
 
   if (!code) {

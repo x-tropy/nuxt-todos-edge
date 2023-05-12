@@ -23,8 +23,8 @@ export function useDb () {
       _db = drizzleD1(process.env.D1_DB)
     } else if (process.dev) {
       // local sqlite in development
-      const { dbDir } = useRuntimeConfig()
-      const sqlite = new Database(join(dbDir, './db.sqlite'))
+      const { dir, name } = useRuntimeConfig().db
+      const sqlite = new Database(join(dir, name))
       _db = drizzle(sqlite)
     } else {
       throw new Error('No database configured for production')
