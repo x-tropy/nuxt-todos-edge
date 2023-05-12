@@ -14,6 +14,10 @@ export async function loginWithGitHub(event: H3Event, config?: LoginGitHubConfig
   config = defu(config, useRuntimeConfig(event).oauth.github)
   const { code } = getQuery(event)
 
+  if (!config.clientId || !config.clientSecret) {
+    console.error('GitHub OAuth error: missing NUXT_OAUTH_GITHUB_CLIENT_ID or NUXT_OAUTH_GITHUB_CLIENT_SECRET env variables.')
+  }
+
   if (!code) {
     config.scope = config.scope || []
     if (config.emailRequired && !config.scope.includes('user:email')) {

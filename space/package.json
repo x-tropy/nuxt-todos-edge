@@ -1,6 +1,6 @@
 {
   "name": "nuxt-space-layer",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "description": "Bring fullstack capababilities to Nuxt apps, for the edge.",
   "main": "nuxt.config.ts",
   "scripts": {
