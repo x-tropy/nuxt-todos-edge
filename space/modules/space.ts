@@ -3,7 +3,7 @@ import { defu } from 'defu'
 import { join, relative } from 'pathe'
 import { sha256 } from 'ohash'
 import { writeFile } from 'node:fs/promises'
-import { existsSync } from 'node:fs'
+import { existsSync, mkdirSync } from 'node:fs'
 
 export default defineNuxtModule({
   meta: {
@@ -18,6 +18,7 @@ export default defineNuxtModule({
     })
     const tablesPath = join(runtimeConfig.db.dir, 'tables.ts')
     if (!existsSync(tablesPath)) {
+      mkdirSync(runtimeConfig.db.dir, { recursive: true })
       await writeFile(tablesPath, 'import { sqliteTable, text, integer } from \'drizzle-orm/sqlite-core\'\n', 'utf8')
     }
 
