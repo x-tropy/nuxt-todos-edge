@@ -2,24 +2,39 @@
 
 Enter to the galaxy of fullstack apps running on the edge.
 
+⚠️ this is a work in progress, not ready for production yet, the layer is going to be changed to a module very soon.
+
 ## Features
 
 - Session management with secured & sealed cookie sessions
 - Helpers for OAuth support (GitHub, more soon)
-- Create and query typed collections
+- Backed in database with SQLite
+- Create and query typed collections with `useDB()`
 
 Nuxt Space leverages SQLite in development and uses [D1](https://developers.cloudflare.com/d1/) or [Turso](https://turso.tech) in production.
 
 ## Setup
 
-You need to add a `NUXT_SESSION_PASSWORD` env variable with at least 32 characters in the `.env`.
+```bash
+pnpm i -D nuxt-space-layer
+```
+
+Add it to your `nuxt.config.ts`:
+
+```ts
+export default defineNuxtConfig({
+  extends: 'nuxt-space-layer'
+})
+```
+
+Next, add a `NUXT_SESSION_PASSWORD` env variable with at least 32 characters in the `.env`.
 
 ```bash
 # .env
 NUXT_SESSION_PASSWORD=password-with-at-least-32-characters
 ```
 
-Add `runtimeConfig.dbDir` to your `nuxt.config.ts`.
+Nuxt Space can generate one for you when running Nuxt in development the first time when no `NUXT_SESSION_PASSWORD` is set.
 
 ## Vue Composables
 
@@ -93,6 +108,8 @@ export const todos = sqliteTable('todos', {
   createdAt: integer('created_at', { mode: 'timestamp' }).notNull(),
 })
 ```
+
+Learn more about [Drizzle SQLite](https://github.com/drizzle-team/drizzle-orm/blob/main/drizzle-orm/src/sqlite-core/README.md)
 
 API route to list all todos for the current user in `~/server/api/todos.get.ts`
 
