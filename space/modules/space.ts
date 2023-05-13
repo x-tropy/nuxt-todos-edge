@@ -35,8 +35,8 @@ export default defineNuxtModule({
     runtimeConfig.oauth.github = defu(runtimeConfig.oauth.github, {
       clientId: '',
       clientSecret: '',
-      authorizationURL: '',
-      tokenURL: '',
+      authorizationURL: 'https://github.com/login/oauth/authorize',
+      tokenURL: 'https://github.com/login/oauth/access_token'
     })
     
     // Drizzle Files

@@ -48,10 +48,7 @@ interface OAuthConfig {
 export function gitHubOAuthEventHandler({ config, onSuccess, onError }: OAuthConfig) {
   return eventHandler(async (event: H3Event) => {
     // @ts-ignore
-    config = defu(config, useRuntimeConfig(event).oauth?.github, {
-      authorizationURL: 'https://github.com/login/oauth/authorize',
-      tokenURL: 'https://github.com/login/oauth/access_token'
-    }) as OAuthGitHubConfig
+    config = defu(config, useRuntimeConfig(event).oauth?.github, {}) as OAuthGitHubConfig
     const { code } = getQuery(event)
 
     if (!config.clientId || !config.clientSecret) {
