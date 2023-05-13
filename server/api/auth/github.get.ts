@@ -1,19 +1,6 @@
-export default eventHandler(async (event) => {
-  try {
-    const ghUser = await loginWithGitHub(event)
-
-    if (!ghUser) {
-      // User redirected
-      return
-    }
-
-    await setUserSession(event, {
-      user: ghUser,
-      createdAt: new Date()
-    })
-  } catch(e) {
+export default gitHubOAuthEventHandler({
+  async onSuccess(event, { user }) {
+    await setUserSession(event, { user })
     return sendRedirect(event, '/')
   }
-
-  return sendRedirect(event, '/')
 })

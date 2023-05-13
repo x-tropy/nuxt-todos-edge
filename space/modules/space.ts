@@ -4,6 +4,7 @@ import { join, relative } from 'pathe'
 import { sha256 } from 'ohash'
 import { writeFile } from 'node:fs/promises'
 import { existsSync, mkdirSync } from 'node:fs'
+import { OAuthGitHubConfig } from '../server/utils/oauth/github'
 
 export default defineNuxtModule({
   meta: {
@@ -34,6 +35,8 @@ export default defineNuxtModule({
     runtimeConfig.oauth.github = defu(runtimeConfig.oauth.github, {
       clientId: '',
       clientSecret: '',
+      authorizationURL: '',
+      tokenURL: '',
     })
     
     // Drizzle Files

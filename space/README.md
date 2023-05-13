@@ -112,65 +112,29 @@ export default eventHandler(async (event) => {
 ```
 
 
-### OAuth Helpers
+### OAuth Event Handlers
 
-Login with GitHub, it will automatically redirect to GitHub OAuth page and then redirect back to the same route with the `code` query parameter.
+### GitHub
 
-```ts
-// Login with GitHub OAuth
-const ghUser = await loginWithGitHub(event, {
-  clientId: string,
-  clientSecret: string,
-  scope?: string[]
-  emailRequired?: boolean
-})
-
-// ghUser is undefined if the user is redirected to GitHub OAuth page
-```
+The `githubOAuthEventHandler({ onSuccess, config?, onError? })` will return an event handler that automatically redirects to GitHub OAuth page and then call `onSuccess` or `onError` depending on the result.
 
 Example: `~/server/api/auth/github.get.ts`
 
 ```ts
-export default eventHandler(async (event) => {
-  try {
-    const ghUser = await loginWithGitHub(event, {
-      clientId: '', // default to process.env.NUXT_OAUTH_GITHUB_CLIENT_ID
-      clientSecret: '', // default to process.env.NUXT_OAUTH_GITHUB_CLIENT_SECRET
-    })
-    if (!ghUser) {
-      // User redirected
-      return
-    }
-
-    await setUserSession(event, {
-      user: ghUser,
-      loggedInAt: new Date()
-    })
-  } catch (e) {
-    return sendRedirect(event, '/login')
-  }
-
-  return sendRedirect(event, '/')
+export default gitHubOAuthEventHandler({
+  async onSuccess(event, { user, accessToken }) {
+    await setUserSession(event, { user })
+    return sendRedirect(event, '/')
+  },
+  // Optional, will return a json error and status code by default
+  onError(event, error) {
+    console.error('GitHub OAuth error:', error)
+    return sendRedirect(event, '/')
+  },
 })
 ```
 
-TODO: refactor with:
-```ts
-spaceOAuthEventHandler({
-  provider: 'github',
-  config: {
-    // default to runtimeConfig.oauth.github
-  },
-  onSuccess (event, result) {
-    // result: { user, token }
-  },
-  onError (event, error) {
-
-  }
-})
-```
-
-### Event Handlers
+### Event Handlers Helpers
 
 Coming soon.
 
@@ -186,6 +150,7 @@ export default spaceEventHandler({
     },
   },
   handler (event) {
-
+    // event.context.session
+    // event.context.body is parsed and validation
   }
 })

@@ -1,6 +1,6 @@
 import { sql } from 'drizzle-orm'
 
-export default eventHandler(async () => {
+export default eventHandler(async (event) => {
   // Count the total number of todos
   return await useDb().select({
     todos: sql<number>`count(*)`,
