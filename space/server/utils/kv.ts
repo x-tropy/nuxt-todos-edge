@@ -15,9 +15,14 @@ export function useKV (prefix?: string) {
           binding: process.env.KV
         })
       })
-    } else {
+    } else if (process.dev) {
       _kv = createStorage({
         driver: fsDriver({ base: config.dir })
+      })
+    } else {
+      throw createError({
+        statusCode: 500,
+        message: 'No KV configured for production'
       })
     }
   }
