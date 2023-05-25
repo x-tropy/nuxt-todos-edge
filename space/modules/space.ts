@@ -1,13 +1,12 @@
 import { defineNuxtModule, logger, useNitro } from 'nuxt/kit'
 import { defu } from 'defu'
-import { join, relative } from 'pathe'
+import { join, relative, dirname } from 'pathe'
 import { sha256 } from 'ohash'
 import { writeFile } from 'node:fs/promises'
 import { existsSync, mkdirSync } from 'node:fs'
 import { watch } from 'chokidar'
 import { debounce } from 'perfect-debounce'
 import { execa } from 'execa'
-import { migrate } from 'drizzle-orm/better-sqlite3/migrator'
 
 export default defineNuxtModule({
   meta: {
@@ -16,10 +15,16 @@ export default defineNuxtModule({
   async setup(_options, nuxt) {
     const rootDir = nuxt.options.rootDir
     const runtimeConfig = nuxt.options.runtimeConfig
+
+    // Data settings
+    runtimeConfig.kv = defu(runtimeConfig.kv, {
+      dir: join(rootDir, 'data', 'kv')
+    })
     // Db settings
     runtimeConfig.db = defu(runtimeConfig.db, {
-      dir: join(rootDir, 'server', 'db'),
-      name: 'db.sqlite'
+      tables: join(rootDir, 'server', 'db', 'tables.ts'),
+      migrations: join(rootDir, 'server', 'db', 'migrations'),
+      database: join(rootDir, 'data', 'db.sqlite')
     })
 
     // Session settings
@@ -46,21 +51,20 @@ export default defineNuxtModule({
     // Drizzle Files
     if (nuxt.options.dev) {
       const drizzleConfig = {
-        out: relative(rootDir, join(runtimeConfig.db.dir, 'migrations')),
-        schema: relative(rootDir, join(runtimeConfig.db.dir, 'tables.ts')),
+        out: relative(rootDir, join(runtimeConfig.db.migrations)),
+        schema: relative(rootDir, join(runtimeConfig.db.tables)),
         breakpoints: true
       }
       // Create drizzle.config.json
       const drizzleConfigPath = join(rootDir, 'drizzle.config.json')
       await writeFile(drizzleConfigPath, JSON.stringify(drizzleConfig, null, 2), 'utf8')
       // Create tables.ts if it doesn't exist
-      const tablesPath = join(runtimeConfig.db.dir, 'tables.ts')
-      if (!existsSync(tablesPath)) {
-        mkdirSync(runtimeConfig.db.dir, { recursive: true })
-        await writeFile(tablesPath, 'import { sqliteTable, text, integer } from \'drizzle-orm/sqlite-core\'\n', 'utf8')
+      if (!existsSync(runtimeConfig.db.tables)) {
+        mkdirSync(dirname(runtimeConfig.db.tables), { recursive: true })
+        await writeFile(runtimeConfig.db.tables, 'import { sqliteTable, text, integer } from \'drizzle-orm/sqlite-core\'\n', 'utf8')
       }
-      const watcher = watch(tablesPath).on('change', debounce(async () => {
-        logger.info('`'+relative(rootDir, tablesPath) + '` changed, running `npx drizzle-kit generate:sqlite`')
+      const watcher = watch(runtimeConfig.db.tables).on('change', debounce(async () => {
+        logger.info('`'+relative(rootDir, runtimeConfig.db.tables) + '` changed, running `npx drizzle-kit generate:sqlite`')
         await execa('npx', ['drizzle-kit', 'generate:sqlite'], { cwd: rootDir })
         logger.info('Restarting server to migrate database')
         watcher.close()

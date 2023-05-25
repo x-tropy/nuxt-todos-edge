@@ -5,7 +5,6 @@ import { drizzle, BetterSQLite3Database } from 'drizzle-orm/better-sqlite3'
 
 // @ts-ignore
 import Database from 'better-sqlite3'
-import { join } from 'pathe'
 
 export * as tables from '~~/server/db/tables'
 
@@ -24,8 +23,8 @@ export function useDB () {
       _db = drizzleD1(process.env.D1_DB)
     } else if (process.dev) {
       // local sqlite in development
-      const { dir, name } = useRuntimeConfig().db
-      const sqlite = new Database(join(dir, name))
+      const config = useRuntimeConfig().db
+      const sqlite = new Database(config.database)
       _db = drizzle(sqlite)
     } else {
       throw createError({

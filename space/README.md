@@ -36,6 +36,17 @@ NUXT_SESSION_PASSWORD=password-with-at-least-32-characters
 
 Nuxt Space can generate one for you when running Nuxt in development the first time when no `NUXT_SESSION_PASSWORD` is set.
 
+Lastly, Nuxt Space will create a `data/` directory to store the sqlite database, KV and files. If you don't want to keep the same data between each developers, add the `data/` directory to the `.gitignore`:
+
+```
+node_modules
+.nuxt
+.output
+.env
+dist
+data
+```
+
 ## Vue Composables
 
 Space automatically add some plugins to fetch the current user session to let you access it from your Vue components.

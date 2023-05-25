@@ -4,10 +4,10 @@ import { join } from 'pathe'
 
 export default defineNitroPlugin(async () => {
   if (process.dev) {
-    const { dir } = useRuntimeConfig().db
+    const config = useRuntimeConfig().db
 
     try {
-      migrate(useDB() as BetterSQLite3Database, { migrationsFolder: join(dir, './migrations') })
+      migrate(useDB() as BetterSQLite3Database, { migrationsFolder: config.migrations })
     } catch (err) {
       console.log('Cannot migrate database', err)
       // @ts-ignore
