@@ -2,6 +2,8 @@ import { drizzle as drizzleD1, DrizzleD1Database } from 'drizzle-orm/d1'
 import { createClient as createLibSQLClient } from '@libsql/client/http'
 import { drizzle as drizzleLibSQL, LibSQLDatabase } from 'drizzle-orm/libsql'
 import { drizzle, BetterSQLite3Database } from 'drizzle-orm/better-sqlite3'
+import { migrate } from 'drizzle-orm/better-sqlite3/migrator'
+
 // @ts-ignore
 import Database from 'better-sqlite3'
 import { join } from 'pathe'
@@ -10,7 +12,7 @@ export * as tables from '~~/server/db/tables'
 
 let _db: DrizzleD1Database | BetterSQLite3Database | LibSQLDatabase | null = null
 
-export function useDb () {
+export function useDB () {
   if (!_db) {
     if (process.env.TURSO_DB_URL && process.env.TURSO_DB_TOKEN) {
       // Turso in production
@@ -35,4 +37,3 @@ export function useDb () {
   }
   return _db
 }
-

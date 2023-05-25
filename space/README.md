@@ -87,7 +87,7 @@ await requireUserSession(event)
 
 ```ts
 // Returns a Drizzle instance
-const db = useDb()
+const db = useDB()
 
 // All tables defined in `~/server/db/tables.ts`
 tables.*
@@ -120,7 +120,7 @@ export default eventHandler(async (event) => {
   const session = await requireUserSession(event)
 
   // List todos for the current user
-  return await useDb()
+  return await useDB()
     .select()
     .from(tables.todos)
     .where(eq(tables.todos.userId, session.user.id))
