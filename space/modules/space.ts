@@ -16,7 +16,7 @@ export default defineNuxtModule({
     const rootDir = nuxt.options.rootDir
     const runtimeConfig = nuxt.options.runtimeConfig
 
-    // Data settings
+    // KV settings
     runtimeConfig.kv = defu(runtimeConfig.kv, {
       dir: join(rootDir, 'data', 'kv')
     })
@@ -26,6 +26,10 @@ export default defineNuxtModule({
       migrations: join(rootDir, 'server', 'db', 'migrations'),
       database: join(rootDir, 'data', 'db.sqlite')
     })
+    // Create the databse directory
+    if (!existsSync(runtimeConfig.db.database)) {
+      mkdirSync(dirname(runtimeConfig.db.database), { recursive: true })
+    }
 
     // Session settings
     runtimeConfig.session = defu(runtimeConfig.session, {
