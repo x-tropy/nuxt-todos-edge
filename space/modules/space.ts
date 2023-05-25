@@ -59,11 +59,11 @@ export default defineNuxtModule({
         mkdirSync(runtimeConfig.db.dir, { recursive: true })
         await writeFile(tablesPath, 'import { sqliteTable, text, integer } from \'drizzle-orm/sqlite-core\'\n', 'utf8')
       }
-
-      watch(tablesPath).on('change', debounce(async () => {
+      const watcher = watch(tablesPath).on('change', debounce(async () => {
         logger.info('`'+relative(rootDir, tablesPath) + '` changed, running `npx drizzle-kit generate:sqlite`')
         await execa('npx', ['drizzle-kit', 'generate:sqlite'], { cwd: rootDir })
         logger.info('Restarting server to migrate database')
+        watcher.close()
         await nuxt.hooks.callHook('restart')
       }))
     }

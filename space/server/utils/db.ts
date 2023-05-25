@@ -2,7 +2,6 @@ import { drizzle as drizzleD1, DrizzleD1Database } from 'drizzle-orm/d1'
 import { createClient as createLibSQLClient } from '@libsql/client/http'
 import { drizzle as drizzleLibSQL, LibSQLDatabase } from 'drizzle-orm/libsql'
 import { drizzle, BetterSQLite3Database } from 'drizzle-orm/better-sqlite3'
-import { migrate } from 'drizzle-orm/better-sqlite3/migrator'
 
 // @ts-ignore
 import Database from 'better-sqlite3'
