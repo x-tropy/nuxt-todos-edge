@@ -11,6 +11,11 @@ export interface UserSession {
 export async function getUserSession (event: H3Event) {
   return (await _useSession(event)).data as UserSession
 }
+/**
+ * Create a user session
+ * @param event 
+ * @param data User session data, please only store public information since it can be decoded with API calls
+ */
 export async function setUserSession (event: H3Event, data: UserSession) {
   const session = await _useSession(event)
 

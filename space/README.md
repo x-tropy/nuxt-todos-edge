@@ -10,6 +10,7 @@ Enter to the galaxy of fullstack apps running on the edge.
 - Helpers for OAuth support (GitHub, more soon)
 - Backed in database with SQLite
 - Create and query typed collections with `useDB()`
+- Access key-value storage with `useKV()`
 
 Nuxt Space leverages SQLite in development and uses [D1](https://developers.cloudflare.com/d1/) or [Turso](https://turso.tech) in production.
 
@@ -76,11 +77,13 @@ const { loggedIn, user, session, clear } = useUserSession()
 ### Session Management
 
 ```ts
-// Set a user session
+// Set a user session, note that this data is encrypted in the cookie but can be decrypted with an API call
+// Only store the data that allow you to recognize an user, but do not store sensitive data
 await setUserSession(event, {
   user: {
     // ... user data
   },
+  loggedInAt: new Date()
   // Any extra fields
 })
 
@@ -90,8 +93,8 @@ const session = await getUserSession(event)
 // Clear the current user session
 await clearUserSession(event)
 
-// Require a user session (send back 401 if no user in session)
-await requireUserSession(event)
+// Require a user session (send back 401 if no `user` key in session)
+const session = await requireUserSession(event)
 ```
 
 ### Database Helpers (SQLite)
@@ -139,6 +142,17 @@ export default eventHandler(async (event) => {
 })
 ```
 
+### Key-Value Store
+
+```ts
+const store = useKV(prefix?: string)
+
+await store.getKeys()
+await store.setItem(key, value)
+await store.getItem(key, value)
+await store.removeItem(key, value)
+// Read more on all available methods on https://unstorage.unjs.io
+```
 
 ### OAuth Event Handlers
 
@@ -154,7 +168,7 @@ export default gitHubOAuthEventHandler({
     await setUserSession(event, { user })
     return sendRedirect(event, '/')
   },
-  // Optional, will return a json error and status code by default
+  // Optional, will return a json error and 401 status code by default
   onError(event, error) {
     console.error('GitHub OAuth error:', error)
     return sendRedirect(event, '/')
@@ -167,7 +181,7 @@ export default gitHubOAuthEventHandler({
 Coming soon.
 
 ```ts
-export default spaceEventHandler({
+export default neoEventHandler({
   // require session
   session: true,
   // validation
@@ -182,3 +196,11 @@ export default spaceEventHandler({
     // event.context.body is parsed and validation
   }
 })
+
+## Deploy
+
+**useDB()**:
+- `D1_DB` environment variable with D1 binding or `TURSO_DB_URL` + `TURSO_DB_TOKEN` to connect with Turso database
+
+**useKV()**:
+- `KV` environment variable with CloudFlare KV binding

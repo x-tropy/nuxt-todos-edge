@@ -1,4 +1,4 @@
-import { defineNuxtModule, logger, useNitro } from 'nuxt/kit'
+import { defineNuxtModule, logger } from 'nuxt/kit'
 import { defu } from 'defu'
 import { join, relative, dirname } from 'pathe'
 import { sha256 } from 'ohash'
